@@ -3,13 +3,13 @@ import sys
 input = sys.stdin.readline
 class Queue:
     def __init__(self):
-        self.queue = deque([])
+        self.queue = deque()
     def PUSH(self,x):
         self.queue.append(x)
     def POP(self):
         if len(self.queue) == 0:
             return -1
-        res = self.queue.popleft(-1)
+        res = self.queue.popleft()
         return res
     def is_empty(self):
         if len(self.queue) == 0:
