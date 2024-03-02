@@ -27,9 +27,6 @@ else:
 
 
 print(int(round(sum(arr)/N,0)))
-print(sum(arr)//N)
 print(sorted(arr,reverse=False)[N//2])
 print(answer3)
 print(max(arr)-min(arr))
-
-# 5
