@@ -3,5 +3,5 @@ import sys
 input = sys.stdin.readline
 n  = int(input())
 tt = input()
-res = sum([(ord(tt[i])-96) * (31**i) for i in range(n)])
+res = sum([(ord(tt[i])-96) * (31**i) for i in range(n)]) % 1234567891
 print(res)
