@@ -1,17 +1,19 @@
 import sys
-from itertools import combinations
 input = sys.stdin.readline
-formula = input()
+formula = input().strip()
 def solution(formula):
-    # -가 무조건 하나는 존재한다는 뜻
-    if '-' not in formula: return eval(formula)
-    operations = formula.count('+') + formula.count('-')
-    cand = list(range(operations))
-    
+    if '-' not in formula:
+        return eval(formula)
+    arr = formula.split('-')
+    res = []
+    for item in arr:
+        tmp = 0
+        for it in item.split('+'):
+            if it.replace('0',''): # None이 아니라면
+                tmp += int(it)
+        res.append(str(tmp))
+    return eval('-'.join(res))
+print(solution(formula))
 
-# step이 n이면 나올 수 있는 결과도 n-1아님?
-# 1 : 1
-# 2 : 2
-# 3 : 3
-
-
+# 2-3+4-5+4+6
+# 0009+00090-2
