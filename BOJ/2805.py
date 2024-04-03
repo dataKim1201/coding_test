@@ -1,7 +1,7 @@
 import sys
 input = sys.stdin.readline
 n, target = map(int,input().split())
-arr = sorted(list(map(int,input().split())),reverse=True)
+arr = list(map(int,input().split()))
 start, end = 0, max(arr)
 while start <= end:
     mid = (start + end)//2
@@ -14,5 +14,4 @@ while start <= end:
 
     else:
         end = mid - 1
-
 print(end)
