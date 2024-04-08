@@ -22,7 +22,6 @@ def bfs(case, target):
                 queue.append([new_tmp,cmd + i])
                 visited[new_tmp] = True
 
-
 T = int(input().strip())
 res = []
 for _ in range(T):
