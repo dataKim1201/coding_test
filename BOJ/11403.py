@@ -2,13 +2,12 @@ import sys
 from collections import deque
 input = sys.stdin.readline
 
-def check(x,y):
-    visited = []
+def check(x,y,visited=[]):
+    if x == y and len(visited) > 0:
+        return 1
     queue = deque([x])
     while queue:
         x = queue.popleft()
-        if x == y and len(visited) > 0:
-            return 1
         for item in G[x]:
             if item not in visited:
                 visited.append(item)
