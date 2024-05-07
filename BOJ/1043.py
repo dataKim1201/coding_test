@@ -1,35 +1,28 @@
 import sys
+from collections import deque
 input = sys.stdin.readline
-n,m  = map(int,input().split())
-fact_person = list(map(int,input().split()))
-if len(fact_person) == 1:
-    fact_person = set([])
-else:
-    fact_person = set(fact_person[1:])
-parties = [list(map(int,input().split()))[1:] for _ in range(m)]
-visited = [False] * m
+N,M = map(int,input().split())
+true = list(map(int,input().split()))
+if len(true) != 1:
+    true = true[1:]
+parties = [list(map(int,input().split()))[1:] for _ in range(M)]
+# sorted_parties = sorted(parties,key=lambda x: len(set(x) &set(true)), reverse=True)
 answer = 0
-flag = False
-for idx, party in enumerate(parties):
-    for per in party:
-        if per not in fact_person:
-            flag = True
-        else: # 있다면?
-            flag = False
-            findings = set(party) - fact_person
-            if answer > 0 and len(findings) >= 1:
-                for i in range(idx-1,-1,-1):
-                    if visited[i] and len(findings & set(parties[i])) >= 1:
-                        answer -= 1
-                        visited[i] = False
-                        for item in parties[i]:
-                            if item not in fact_person and item not in findings:
-                                findings.add(item)
-            break
-    if flag == True:
+
+def bfs():
+    visited = 0
+    queue = deque(true)
+    while queue:
+        cur = queue.popleft()
+        visited |= (1<<cur) # 넣어주고
+        for item in parties:
+            if cur in item: # 파티에 참석했다면?
+                for pp in item:
+                    if pp not in true and not visited & (1<<pp):
+                        true.append(pp)
+                        queue.append(pp)
+bfs()
+for item in parties:
+    if all([pp not in true for pp in item]):
         answer += 1
-        visited[idx] = True
-    else:
-        fact_person = fact_person^findings
-    # print(fact_person)
 print(answer)
