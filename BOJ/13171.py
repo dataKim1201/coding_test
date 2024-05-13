@@ -15,7 +15,3 @@ print(divide_square(bb))
 target = int(1e18)
 bb = int(1e18)
 print(divide_square(bb))
-
-# C^n = C^(n//2)*C^(n//2) or C^(n//2)*C^(n//2) * C
-
-# 2 10
