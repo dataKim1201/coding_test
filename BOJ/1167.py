@@ -1,40 +1,31 @@
 import sys
+from collections import defaultdict,deque
 input = sys.stdin.readline
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(10**5)
 N = int(input().strip())
-graph = {}
+graph = defaultdict(list)
 for _ in range(N):
     cmd = list(map(int,input().split()))
-    if cmd[0] not in graph:
-        graph[cmd[0]] = []
-    start = cmd[0]
-    cmd = cmd[1:]
-    for idx in range(len(cmd)):
-        if cmd[idx] == -1:
-            break
-        if idx % 2== 0:
-            end = cmd[idx]
-        else:
-            weight = cmd[idx]
-            graph[start].append([end,weight])
-            del end, weight
-
-# print(graph)
+    for i in range(1, len(cmd) -2, 2):
+        graph[cmd[0]].append((cmd[i],cmd[i + 1]))
+               
 answer = 0
-final_end = 0
-def dfs(start,visited = 0,cnt = 0): #, string = ''):
-    global answer, final_end
-    if not (visited & (1<< start)):
-        visited |= (1<<start)
-        for node in graph[start]:
-            end,weight = node
-            if not (visited & (1<< end)):
-                result,_ = dfs(end,visited,cnt + weight)
-                if result > answer:
-                    answer = result
-                    final_end = end
-    return cnt, final_end
-_,ed  = dfs(1,0,0)
-dfs(ed,0,0)
-print(answer)
+
+def bfs(x):
+    global answer
+    queue = deque([x])
+    visited = [-1] * (N + 1)
+    visited[x] = 0
+    dist = [0,0]
+    while queue:
+        now = queue.popleft()
+        for (node, weight) in graph[now]:
+            if visited[node] == -1:
+                visited[node] = visited[now] + weight
+                queue.append(node)
+                if visited[node] > dist[1]:
+                    dist = [node, visited[node]]
+    return dist
+node = bfs(1)[0]
+print(bfs(node)[1])
 
