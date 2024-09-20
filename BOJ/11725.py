@@ -1,24 +1,25 @@
 import sys
-sys.setrecursionlimit(10**6)
 input = sys.stdin.readline
-
 n = int(input())
-tree = [[] for _ in range(n+1)]
-parents = [0 for _ in range(n+1)]
-parents[1] = 1
-
-for _ in range(n-1) :
-    a, b = map(int, input().split())
-    tree[a].append(b)
-    tree[b].append(a)
-
-def dfs(start) :
-    for node in tree[start] :
-        if parents[node] == 0 : # 아직 방문 전이면
-            parents[node] = start # 부모 노드 설정
-            dfs(node)
-
-dfs(1)
-
-for i in parents[2:] :
-    print(i)
+arr = [list(map(int,input().split())) for _ in range(n-1)]
+tree = []
+result = {key: 0 for key in range(1,n + 1)}
+# def get_parent(root):
+#     global tree
+for root in range(1,n + 1):
+    # if root in tree:
+    #     continue
+    for item in arr:
+        if root in item:
+            idx = 1 if item.index(root) == 0 else 0
+            tmp = item[idx]
+            # if tmp in tree:
+            #     continue
+            if result[tmp] == 0:
+                result[tmp] = root
+            tree.append(root)
+#             get_parent(tmp)
+# get_parent(1)
+print(tree)
+for i in range(2,n + 1):
+    print(result[i])

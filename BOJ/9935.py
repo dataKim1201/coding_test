@@ -13,5 +13,3 @@ while bomb in arr:
     arr = arr.replace(bomb,'')
 if arr:
     print(arr)
-else:
-    print('FRULA')
