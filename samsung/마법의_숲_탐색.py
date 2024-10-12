@@ -1,101 +1,113 @@
 import sys
 input = sys.stdin.readline
-N,M,K = map(int,input().split())
+from collections import deque
+
 class Monster:
     def __init__(self,c,d) -> None:
+        self.init_map = self.initializing(c)
         self.enterance = d
-        self.init_map = [(-1,c),(-2,c-1),(-2,c),(-2,c+1), (-3,c)]
+    def initializing(self,c):
+        return [(-1,c), (-2,c-1),(-2,c),(-2,c+1), (-3,c)] # 남, 서,본인, 동, 북
+    def change_info(self,init_map,enterance):
+        self.init_map = init_map
+        self.enterance = enterance
+    def is_inRange(self,x,y):
+        return any([(x == i) and (y == j) for i,j in self.init_map])
+    def get_enterance(self):
+        return {0:self.init_map[4], 1:self.init_map[3], 2: self.init_map[0], 3: self.init_map[1] }[self.enterance] #0,1,2,3은 북, 동, 남, 서쪽
+
+def movement(monster):
+    init_map,enterance = monster.init_map, monster.enterance
+
+    while all([(0 <= j < M) and (i < N-1) for i ,j in init_map]): # 
+        print('init_map', init_map)
+        if all([(graph[i+1][j] == 0) and (0<= j < M) and (i+1 < N) for i,j in init_map if 0<= i+1 < N ]): # graph가 범위안에 있고
+            init_map = [ (i+ 1, j) for i,j in init_map]
+        elif all([0 <= j-1 < M for i,j in init_map]) and all([(0<= j-1 < M) and (graph[i][j-1] == 0) for i,j in init_map if 0<= i < N]) and \
+            all([(graph[i+1][j-1] == 0) and (i+1 < N) for i,j in init_map if 0<= i+1 < N]): # graph가 범위안에 있고
+
+            init_map = [ (i+ 1, j-1) for i,j in init_map]
+            enterance = (enterance - 1) %4
+        elif all([0 <= j+1 < M for i,j in init_map]) and all([(0<= j+ 1 < M) and (graph[i][j+1] == 0) for i,j in init_map if 0<= i < N]) and \
+            all([(graph[i+1][j+1] == 0) and (i+1 < N) for i,j in init_map if 0<= i+1 < N ]): # graph가 범위안에 있고
+            init_map = [ (i+ 1, j+1) for i,j in init_map]
+            enterance = (enterance + 1) %4
+        else:
+            print('here')
+            break
+    return init_map, enterance
+
+def bfs(monster):
+    x,y = monster.init_map[2] # 가장 자리
+    queue = deque([])
+    queue.append([x,y])
+    visited = [[False] * M for _ in range(N)]
+    res = x + 1
+    new_monster = monster
+    visited[x][y] = True
+    while queue:
+        print('queue',queue)
+        x,y = queue.popleft()
+        flag = False
+        for dx,dy in [(1,0),(-1,0),(0,1),(0,-1)]:
+            nx,ny = x + dx,y + dy
+            if 0<=nx < N and 0<=ny <M and not visited[nx][ny] and graph[nx][ny] >=1:
+                visited[nx][ny] = True
+                res = max(res, nx + 1)
+                if graph[nx][ny] == 2:
+                    queue.append([nx,ny])
+                if not monster.is_inRange(nx,ny): # out of range
+                    print('nx,ny',nx,ny)
+                    for new_monster in out_list: # 이전에만 존재하니께
+                        if new_monster.is_inRange(nx,ny):
+                            print('new_monster', new_monster.init_map)
+                            flag = True
+                            break
+                
+                    
+        if flag:
+            monster = new_monster
+            print(monster.init_map)
+            queue.append(monster.init_map[2]) # 1이어서 못갔었자나
+    return res
+def print_graph():
+    for item in graph:
+        print(*item)
+N,M,K = map(int,input().split())
 monster_list = []
 for _ in range(K):
     c,d = map(int,input().split())
     monster_list.append(Monster(c-1,d))
-
+out_list = []
+graph = [[0]*M for _ in range(N)]
 result = 0
-graph = [[0] * M for _ in range(N)]
-# r 에  + 1 항상 해줘야 함.
-def exit_latitude(d, center):
-    x,y = center
-    cx,cy = {0 : (-1,0), 1:(0,1), 2:(1,0), 3:(0,-1)}[d]
-    return x + cx, y + cy
-
-def monster_move(monster,idx = 2):
-    global graph
-    init_map = monster.init_map
-    enterance = monster.enterance
-    flag = True
-    while flag:
-        # print('init_map', init_map, 'flag' ,flag)
-        # forward
-        if all([ (i + 1 < N and 0 <= j < M) for i,j in init_map]) and all([graph[i+1][j] <= 0  for i,j in init_map if 0 <= i <N and 0 <=j < M ]):
-            init_map = [(i+1, j) for i,j in init_map]
-        # left 
-        elif all([ (i + 1 < N and 0 <= j-1 < M) and (graph[i][j-1] <= 0)  for i,j in init_map]) and all([graph[i+1][j-1] <= 0  if i >= 0 else True for i,j in init_map ]):
-            # init
-            init_map = [(i+1, j-1) for i,j in init_map]
-            enterance = (enterance - 1) % 4
-        # right
-        elif all([ (i + 1 < N and 0 <= j+1 < M) and (graph[i][j+1] <= 0)  for i,j in init_map]) and all([graph[i+1][j+1] <= 0  if i >= 0 else True for i,j in init_map]): # 서쪽 하늘
-            init_map = [(i+1, j+1) for i,j in init_map]
-            enterance = (enterance + 1) % 4
-        else:
-            flag = False
-    print('init_map result', *init_map, 'enterance', enterance)
-    return init_map,enterance
-    # return init_map[2]
-
-from collections import deque
-def bfs(item):
-    ox,oy = item
-    queue = deque([])
-    queue.append((ox,oy,False))
-    visited = [[False] * M for _ in range(N)]
-    res = ox + 1
-    visited[ox][oy] = True
-    print('ox,oy',ox,oy)
-    while queue:
-        x,y,move = queue.popleft()
-        print('x,y,res',x,y,res, 'ox,oy', ox,oy, queue)
-        for dx,dy in [(1,0),(-1,0),(0,-1),(0,1)]:
-            nx,ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < M and not visited[nx][ny] and graph[nx][ny] >= 1:
-                visited[x][y] = True
-                res = max(res,nx+1)
-                # out of range check
-                # 2상관 없이 탐색
-                if graph[nx][ny] == 2 or move:
-                    queue.append([nx,ny,True])
-                # elif move:
-                #     queue.append([nx,ny, False])
-                # if move == 2: # 탈출구에서 온놈이라면
-                #     queue.append([nx,ny,graph[nx][ny]])
-        # 여기서 out of range가 되면 range변경해주기
-
-
-    return res
-
-def print_graph():
-    for item in graph:
-        print(*item)
-for _ in range(K):
-    print('monster number', _)
-    monster = monster_list[_]
-    # monster move
-    init_map,enterance = monster_move(monster,_)
-    if not all([(0 <= i < N and 0 <= j < M) for i,j in init_map]):
-        graph = [[0] * M for _ in range(N)]
-        # 계산하지 않고 이동
+for k in range(K):
+    # monster는 업데이트 하지않음.
+    new_graph = [item[:] for item in graph]
+    monster = monster_list[k]
+    # movement 진행
+    init_map, enterance = movement(monster)
+    # is success 확인
+    print('k', k,'init_map', init_map)
+    print('enterance', enterance)
+    if any([(i < 0 ) or (j < 0) for i,j in init_map]):
+        graph = [[0]* M for _ in range(N)]
+        out_list = []
         continue
-
-    # 할당 해주자.
+        # contin
+    # assign
+    monster.change_info(init_map,enterance)
+    print('init_map',init_map)
+    
     for i,j in init_map:
         graph[i][j] = 1
-    ex,ey = exit_latitude(enterance, init_map[2])
+    ex,ey = monster.get_enterance()
     graph[ex][ey] += 1
     print_graph()
-    # item movement
-    res = bfs(init_map[2])
-    print(f'number {_}s result: {res} and total {result + res}')
-    print('*'*100)
+    # bfs
+    res = bfs(monster)
     result += res
+    print(f'{k} : res', res)
+    out_list.append(monster)
 
 print(result)
