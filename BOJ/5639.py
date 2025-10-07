@@ -21,32 +21,56 @@
 '''
 import sys
 input = sys.stdin.readline
-pre_tree = []
-while True:
-    cmd = input()
-    if not cmd:
-        break
-    pre_tree.append(int(cmd))
 
-parrent = []
-for idx, item in enumerate(pre_tree):
-    if idx == 0:
-        parrent.append(item)
-    elif idx % 2 == 0:
-        # 부모노드를 꺼내서
-        # 그냥 
-        
+# 전위 탐색 로직
+    # 루트
+    # 좌노드
+    # 우노드
+class Node:
+    def __init__(self,x, left = None,right= None):
+        self.root = x
+        self.left = left
+        self.right = right
 
-def change_search(tree):
-    result = ''
-    print(result)
+def pre_traveler(node):
+    print(node.root)
+    if node.left is not None:
+        pre_traveler(node.left)
+    if node.right is not None:
+        pre_traveler(node.right)
+
+def post_traveler(node,cnt=0):
+    if node.left is not None:
+        post_traveler(node.left, cnt +1)
+    if node.right is not None:
+        post_traveler(node.right,cnt +1)
+    print(node.root)
+
+def get_tree(arr,res = []):
+    for node in arr:
+        res.append(node)
     return None
 
-a= [50, 
-        30, 
-            24, 
-                5, 28, 
-            45, 
-        98, 
-            52,
-                60]
+if __name__ == "__main__":
+    Tree = Node(
+        50,
+        Node(
+            30,
+            Node(
+                24,
+                Node(5),
+                Node(28)
+            ),
+            Node(45)
+        ),
+        Node(
+            98,
+            Node(
+                52,
+                None,
+                Node(60)
+            ),
+        )
+    )
+    post_traveler(Tree)
+# 후위 탐색 로직
